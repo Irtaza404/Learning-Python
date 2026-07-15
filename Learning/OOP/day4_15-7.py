@@ -130,11 +130,6 @@ print(type(d).__name__) # step 2
 print(Dog.__name__)
 
 
-cd "C:\Users\Muhammad Irtaza\OneDrive\Documents\Learning python\Learning-Python"
-git add . 
-git commit -m "Day 17" 
-git push
-
 
 
 
