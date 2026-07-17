@@ -19,8 +19,8 @@ class Vehicle:
     def __str__(self):
         return f"{self.brand} |speed= {self.speed}| fuel = {self.fuel}| "
     def travel(self,distance):
-        return f"{self.brand} traveled {distance}km, used {self.fuel}L fuel"
-        
+        fuel_used = (distance / self.speed) * self.fuel
+        return f"{self.brand} traveled {distance}km, used {fuel_used}L fuel"
 class Car(Vehicle):
     def __init__(self, brand, speed, fuel,doors):
         super().__init__(brand, speed, fuel)
@@ -61,7 +61,33 @@ class Truck(Vehicle):
 from dataclasses import dataclass
 @dataclass
 class Temperature:
-    __celsius:float
+    _celsius:float
+    def __str__(self):
+        return f"{self._celsius}°C | {self.fahrenheit}°F | {self.kelvin}K"
+    @property
+    def celsius(self):
+        return self._celsius
+
+    @celsius.setter
+    def celsius(self, value):
+        if value < -273.15:
+            raise ValueError("Below absolute zero")
+        self._celsius = value
+    
+    @property
+    def fahrenheit(self):
+        return (self._celsius * 9/5) + 32
+    
+    @property
+    def kelvin(self):
+        return self._celsius + 273.15
+    @classmethod
+    def from_fahrenheit(cls, f):
+        return cls((f - 32) * 5/9)  # convert to celsius first
+
+    @classmethod
+    def from_kelvin(cls, k):
+        return cls(k - 273.15)  # convert to celsius first
 
 # Example:
 # t = Temperature(25)
@@ -91,38 +117,52 @@ class Shape(ABC):
         pass
     
 class Circle(Shape):
+    def __init__(self,radius):
+        self.radius=radius
+        
     def area(self):
-        pass
+        return 3.14*self.radius**2
     def perimeter(self):
-        pass
+        return 2 * 3.14 * self.radius
 
+class Triangle (Shape):
+    def __init__(self,a,b,c):
+        self.a=a
+        self.b=b
+        self.c=c
+        
+    def area(self):
+        s = (self.a + self.b + self.c) / 2
+        return  (s(s-self.a)(s-self.b)(s-self.c))**0.5
+    
+    def perimeter(self):
+        return self.a +self. b + self.c
 
+class Rectangle(Shape):
+    def __init__(self,width ,height):
+        self.width=width
+        self.height=height
+        
+    def area(self):
+        return self.width * self.height
+    def perimeter(self):
+        return 2 * (self.width + self.height)
+
+class ShapeCollection:
+    def __init__(self):
+        self.shapes = []  
+    def __add__(self, shape):
+        self.shapes.append(shape)
+        return self  
+    def __len__(self):
+        return len(self.shapes)
+    def total_area(self):
+        return sum(s.area() for s in self.shapes)
 # Example:
 # sc = ShapeCollection()
 # sc + Circle(5)
 # sc + Rectangle(4, 6)
 # len(sc)         → 2
 # sc.total_area() → 102.54
-
-
-# TASK 4 — [Polymorphism + Duck Typing + @classmethod]
-# Create a notification system:
-# - Base class Notification: message, timestamp
-# - EmailNotification: adds recipient, subject
-# - SMSNotification: adds phone number
-# - PushNotification: adds device_id
-# - NotificationSender class with:
-#   - send(notification) — duck typing, calls notification.send()
-#   - @classmethod bulk_send(cls, notifications) — sends all
-#   - Each subclass implements own send() method
-
-# Example:
-# sender = NotificationSender()
-# sender.send(EmailNotification("Hello", "ali@gmail.com", "Greeting"))
-# → "[EMAIL] To: ali@gmail.com | Subject: Greeting | Hello"
-
-# sender.send(SMSNotification("Hello", "0300-1234567"))
-# → "[SMS] To: 0300-1234567 | Hello"
-
 
 
